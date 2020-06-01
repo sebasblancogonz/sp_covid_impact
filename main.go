@@ -5,12 +5,7 @@ import (
 )
 
 func main() {
-	createCache()
 	var s gin.Routes
 
 	s.StartGin()
-}
-
-func createCache() {
-	c :=
 }
