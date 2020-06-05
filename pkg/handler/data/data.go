@@ -4,6 +4,7 @@ import (
 	"encoding/csv"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	dataObject "github.com/sebasblancogonz/sp_covid_impact/pkg/models/data"
@@ -19,6 +20,8 @@ func GetAllData(c *gin.Context) {
 		})
 		return
 	}
+
+	municipality, value := checkParameter(c)
 
 	defer csvURL.Body.Close()
 
@@ -43,6 +46,21 @@ func GetAllData(c *gin.Context) {
 		})
 	}
 
+	filteredList := dataObject.DataList{}
+
+	if municipality {
+		for _, record := range data {
+			if strings.Contains(record.Municip, value) {
+				filteredList = append(filteredList, record)
+			}
+		}
+
+		c.JSON(200, gin.H{
+			"data": filteredList,
+		})
+		return
+	}
+
 	c.JSON(200, gin.H{
 		"data": data,
 	})
@@ -57,4 +75,13 @@ func convertToInt(s string, c *gin.Context) int {
 	}
 
 	return i
+}
+
+func checkParameter(c *gin.Context) (bool, string) {
+	municipality := c.Request.URL.Query().Get("municipality")
+	if municipality != "" {
+		println(municipality)
+		return true, municipality
+	}
+	return false, ""
 }
