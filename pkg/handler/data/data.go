@@ -50,7 +50,8 @@ func GetAllData(c *gin.Context) {
 
 	if municipality {
 		for _, record := range data {
-			if strings.Contains(record.Municip, value) {
+			if strings.Contains(strings.ToUpper(record.Municip),
+				strings.ToUpper(value)) {
 				filteredList = append(filteredList, record)
 			}
 		}
@@ -78,8 +79,7 @@ func convertToInt(s string, c *gin.Context) int {
 }
 
 func checkParameter(c *gin.Context) (bool, string) {
-	municipality := c.Request.URL.Query().Get("municipality")
-	if municipality != "" {
+	if municipality := c.Request.URL.Query().Get("municipality"); municipality != "" {
 		println(municipality)
 		return true, municipality
 	}
