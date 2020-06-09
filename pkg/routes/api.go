@@ -1,7 +1,9 @@
 package routes
 
 import (
+	"log"
 	"net/http"
+	"os"
 
 	"github.com/gin-gonic/gin"
 	"github.com/sebasblancogonz/sp_covid_impact/pkg/handler/data"
@@ -13,13 +15,19 @@ type Routes struct {
 
 // StartGin starts the router
 func (c Routes) StartGin() {
+	port := os.Getenv("PORT")
+
+	if port == "" {
+		log.Fatal("$PORT must be set")
+	}
+
 	r := gin.Default()
 	api := r.Group("/api")
 	{
 		api.GET("/", welcome)
 		api.GET("/data", data.GetAllData)
 	}
-	r.Run(":8000")
+	r.Run(":" + port)
 }
 
 func welcome(c *gin.Context) {
